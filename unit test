@@ -1,0 +1,45 @@
+import unittest
+from unittest.mock import patch
+from app import PasswordManager  # Replace with the actual module name
+
+class TestShowWindow(unittest.TestCase):
+
+    def setUp(self):
+        self.app = PasswordManager()  # Instantiate your PasswordManager class
+        self.app.frames = {
+            "LoginWindow": MockFrame("LoginWindow"),
+            "SignupWindow": MockFrame("SignupWindow"),
+            "AboutWindow": MockFrame("AboutWindow"),
+            "RetrieveWindow": MockFrame("RetrieveWindow"),
+            "ResetWindow": MockResetWindow("ResetWindow"),
+            "AddWindow": MockFrame("AddWindow")
+        }
+
+    def test_show_window(self):
+        self.app.show_window("LoginWindow")
+        self.assertEqual(self.app.frames["LoginWindow"].raise_called, 1)
+        
+        self.app.show_window("ResetWindow")
+        self.assertEqual(self.app.frames["ResetWindow"].raise_called, 1)
+        self.assertEqual(self.app.frames["ResetWindow"].page_shown, "PageOne")
+
+# MockFrame class to simulate Frame behavior
+class MockFrame:
+    def __init__(self, name):
+        self.name = name
+        self.raise_called = 0
+
+    def tkraise(self):
+        self.raise_called += 1
+
+# MockResetWindow class to simulate ResetWindow behavior
+class MockResetWindow(MockFrame):
+    def __init__(self, name):
+        super().__init__(name)
+        self.page_shown = None
+
+    def show_page(self, page):
+        self.page_shown = page
+
+if __name__ == '__main__':
+    unittest.main()
